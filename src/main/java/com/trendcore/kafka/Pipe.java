@@ -1,2 +1,4 @@
-package com.trendcore.kafka;public class Pipe {
+package com.trendcore.kafka;
+
+public class Pipe {
 }
