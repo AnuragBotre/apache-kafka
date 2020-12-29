@@ -1,14 +1,13 @@
 package com.trendcore.kafka;
 
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.KGroupedStream;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.state.KeyValueStore;
 
 import java.util.Arrays;
 import java.util.Properties;
@@ -39,7 +38,7 @@ public class WordCount {
             In this case word will become key for next set of operations.
          */
         KGroupedStream<String, String> wordCount = words.groupBy((key, value) -> value);
-        KTable<String, Long> count = wordCount.count();
+        KTable<String, Long> count = wordCount.count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("counts-store"));
 
         count.toStream().to("streams-wordcount-output", Produced.with(Serdes.String(),Serdes.Long()));
 
