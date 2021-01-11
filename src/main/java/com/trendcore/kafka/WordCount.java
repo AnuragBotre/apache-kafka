@@ -38,6 +38,11 @@ public class WordCount {
             In this case word will become key for next set of operations.
          */
         KGroupedStream<String, String> wordCount = words.groupBy((key, value) -> value);
+
+        /*
+            KTable is local table created as per debug information.
+            KStreamAggregate look for this
+         */
         KTable<String, Long> count = wordCount.count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("counts-store"));
 
         count.toStream().to("streams-wordcount-output", Produced.with(Serdes.String(),Serdes.Long()));
